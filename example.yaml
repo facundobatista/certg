@@ -1,0 +1,18 @@
+# the filename of the source SVG
+svg_source: example_certificate.svg
+
+# the prefix of all generated PDFs, and the variable name from the
+# replace info to use as a distinction
+result_prefix: certificate
+result_distinct: name
+
+# the information for each generation as a dictionary, where the keys are what
+# was used in the SVG with a {{}} around
+replace_info:
+    - name: Juan Carlos Foo
+      stopit: .
+    - name: María Carmen Largonombre
+      stopit: .
+    - name: Fulano Foobar
+      project_line: creating the project "Crazy Project" (*)
+      project_url: (*) http://unservidor.com/algolargo/mascosas/etcetera
