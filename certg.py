@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# Copyright 2013 Facundo Batista
+# This file is GPL v3, part of http://github.com/facundobatista/certg
+# project; refer to it for more info.
+
 import subprocess
 import sys
 import tempfile
