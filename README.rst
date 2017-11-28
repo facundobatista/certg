@@ -3,6 +3,25 @@ certg
 
 A certificate generator, from a SVG to a lot of PDFs
 
+How to use it as a lib
+----------------------
+
+Install certg from PyPI and then...
+
+::
+
+    >>> import certg
+    >>> certg.process(
+        svg_source,
+        result_prefix,
+        result_distinct,
+        replace_info,
+        progress_cb=None)
+
+... where all mandatory parameters have the same meaning that if you have them
+in the YAML config (see below), and `progress_cb` is a callback to be called
+after processing each item (useful to report progress).
+
 
 How to see an example
 ---------------------

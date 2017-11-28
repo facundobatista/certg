@@ -1,2 +1,4 @@
 include requirements.txt
 include README.rst
+include example.yaml
+include example_certificate.svg
