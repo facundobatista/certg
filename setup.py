@@ -22,7 +22,7 @@ from distutils.core import setup
 
 setup(
     name='certg',
-    version='3.0',
+    version='3.1',
     license='GPL-3',
     author='Facundo Batista',
     author_email='facundo@taniquetil.com.ar',
