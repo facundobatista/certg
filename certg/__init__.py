@@ -36,8 +36,9 @@ def process(svg_source, result_prefix, result_distinct, replace_info, progress_c
         replacing_attrs.update(data)
 
     for data in replace_info:
-        # indicate advance
-        progress_cb()
+        # indicate advance, if should
+        if progress_cb is not None:
+            progress_cb()
 
         # replace content
         content = content_base
