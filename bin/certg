@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+
+# Copyright 2013-2017 Facundo Batista
+
+# This program is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License version 3, as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranties of
+# MERCHANTABILITY, SATISFACTORY QUALITY, or FITNESS FOR A PARTICULAR
+# PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# For further info, check  http://github.com/facundobatista/certg
+
+import os
+import subprocess
+import sys
+import tempfile
+
+import yaml
+from progress import bar
+
+# small hack to allow certg to be run directly from the project, using code 
+# from project itself, not anything already installed in the system
+parent_dir = os.path.dirname(os.path.dirname(os.path.realpath(sys.argv[0])))
+if os.path.basename(parent_dir).startswith('certg'):
+    # inside the project or an opened tarball!!
+    sys.path.insert(0, parent_dir)
+
+import certg
+
+
+if len(sys.argv) != 2:
+    print("Usage: {} <config.yaml>".format(sys.argv[0]))
+    exit()
+
+with open(sys.argv[1], 'rt', encoding='utf8') as fh:
+    config = yaml.load(fh)
+
+
+svg_source = config['svg_source']
+result_prefix = config['result_prefix']
+result_distinct = config['result_distinct']
+replace_info = config['replace_info']
+
+progress_bar = bar.Bar("Processing", max=len(replace_info))
+
+certg.process(svg_source, result_prefix, result_distinct, replace_info, progress_bar.next)
+
+progress_bar.finish()
