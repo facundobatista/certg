@@ -1,0 +1,25 @@
+# the filename of the source SVG
+svg_source: examples/carnet.svg
+
+# the prefix of all generated PDFs, and the variable name from the
+# replace info to use as a distinction
+result_prefix: carnet
+result_distinct: name
+
+# PDFs will be generated after inserting images in the SVG, we need to
+# specify here:
+# - the object id which defines the rectangle that the image will take
+# - which variable we'll use below in `replace_info` to indicate the images paths
+images:
+    placement_rectangle_id: rect1695
+    path_variable: image_path
+
+# the information for each generation as a dictionary, where the keys are what
+# was used in the SVG with a {{}} around
+replace_info:
+    - name: Great Grossini
+      image_path: examples/grossini.png
+    - name: Tamara Grossini
+      image_path: examples/grosist1.png
+    - name: Kathia Grossini
+      image_path: examples/grosist2.png

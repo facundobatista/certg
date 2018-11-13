@@ -1,5 +1,5 @@
 # the filename of the source SVG
-svg_source: example_certificate.svg
+svg_source: examples/certificate.svg
 
 # the prefix of all generated PDFs, and the variable name from the
 # replace info to use as a distinction

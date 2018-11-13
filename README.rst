@@ -28,13 +28,21 @@ How to see an example
 
 Get the code, and run::
 
-    ./certg.py example.yaml
+    bin/certg example_certificate.yaml
 
-The `example.yaml` is included in the project, with the other file it
-uses: `example_certificate.svg`.
+The `example_certificate.yaml` is included in the project, with the
+other file it uses: `example_certificate.svg`.
 
 After successful execution, you will get three `.pdf` files, the result
 of the generation.
+
+
+I want another example
+----------------------
+
+Here's one that inserts different images in the outputs::
+
+    bin/certg example_images.yaml
 
 
 What do I need to have installed

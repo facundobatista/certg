@@ -15,11 +15,28 @@
 # For further info, check  http://github.com/facundobatista/certg
 
 import os
+import re
 import subprocess
 import tempfile
+import uuid
 
 
-def process(svg_source, result_prefix, result_distinct, replace_info, progress_cb=None):
+def pre_process_image(content, place_id):
+    """Preprocess a SVG changing a rect for an image, to be filled by replacing a specific var."""
+    replace_var = uuid.uuid4().hex
+
+    def mutate(match):
+        params = match.groups()[0].split()
+        params = [p for p in params if p.startswith(("id=", "width=", "height=", "x=", "y="))]
+        params.append('xlink:href="file://{}"'.format(replace_var))
+        params.append('preserveAspectRatio="none"')
+        return "<image {} />".format(" ".join(params))
+
+    content = re.sub("<rect(.*?)>", mutate, content, flags=re.DOTALL)
+    return content, replace_var
+
+
+def process(svg_source, result_prefix, result_distinct, replace_info, images, progress_cb=None):
     """Generate N PDFs.
 
     Each PDF is from a key in replace_info, replacing data into the
@@ -29,6 +46,11 @@ def process(svg_source, result_prefix, result_distinct, replace_info, progress_c
     """
     with open(svg_source, "rt", encoding='utf8') as fh:
         content_base = fh.read()
+
+    if images is not None:
+        place_id = images['placement_rectangle_id']
+        image_path_variable = images['path_variable']
+        content_base, replacement_variable = pre_process_image(content_base, place_id)
 
     # get all the replacing attrs
     replacing_attrs = set()
@@ -48,6 +70,11 @@ def process(svg_source, result_prefix, result_distinct, replace_info, progress_c
                 # both because the attr is not supplied, or supplied empty
                 value = ""
             content = content.replace("{{" + attr + "}}", value)
+
+        # replace image, if any
+        if images is not None:
+            image_path = os.path.abspath(data[image_path_variable])
+            content = content.replace(replacement_variable, image_path)
 
         # write the new svg
         _, tmpfile = tempfile.mkstemp(suffix='.svg')
