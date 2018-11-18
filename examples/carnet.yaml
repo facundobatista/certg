@@ -11,8 +11,8 @@ result_distinct: name
 # - the object id which defines the rectangle that the image will take
 # - which variable we'll use below in `replace_info` to indicate the images paths
 images:
-    placement_rectangle_id: rect1695
-    path_variable: image_path
+    - placement_rectangle_id: rect1695
+      path_variable: image_path
 
 # the information for each generation as a dictionary, where the keys are what
 # was used in the SVG with a {{}} around

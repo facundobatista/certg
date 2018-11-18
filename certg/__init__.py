@@ -27,6 +27,10 @@ def pre_process_image(content, place_id):
 
     def mutate(match):
         params = match.groups()[0].split()
+        if not any(place_id in param for param in params):
+            # not the object we were searching for mutation, return the original sequence
+            return match.string[slice(*match.span())]
+
         params = [p for p in params if p.startswith(("id=", "width=", "height=", "x=", "y="))]
         params.append('xlink:href="file://{}"'.format(replace_var))
         params.append('preserveAspectRatio="none"')
@@ -48,9 +52,10 @@ def process(svg_source, result_prefix, result_distinct, replace_info, images, pr
         content_base = fh.read()
 
     if images is not None:
-        place_id = images['placement_rectangle_id']
-        image_path_variable = images['path_variable']
-        content_base, replacement_variable = pre_process_image(content_base, place_id)
+        for image in images:
+            place_id = image['placement_rectangle_id']
+            content_base, replacement_variable = pre_process_image(content_base, place_id)
+            image['replacement_variable'] = replacement_variable
 
     # get all the replacing attrs
     replacing_attrs = set()
@@ -60,7 +65,7 @@ def process(svg_source, result_prefix, result_distinct, replace_info, images, pr
     for data in replace_info:
         # indicate advance, if should
         if progress_cb is not None:
-            progress_cb()
+            progress_cb(data)
 
         # replace content
         content = content_base
@@ -73,8 +78,11 @@ def process(svg_source, result_prefix, result_distinct, replace_info, images, pr
 
         # replace image, if any
         if images is not None:
-            image_path = os.path.abspath(data[image_path_variable])
-            content = content.replace(replacement_variable, image_path)
+            for image in images:
+                image_path_variable = image['path_variable']
+                image_path = os.path.abspath(data[image_path_variable])
+                replacement_variable = image['replacement_variable']
+                content = content.replace(replacement_variable, image_path)
 
         # write the new svg
         _, tmpfile = tempfile.mkstemp(suffix='.svg')

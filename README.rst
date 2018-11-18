@@ -23,12 +23,12 @@ in the YAML config (see below), and `progress_cb` is a callback to be called
 after processing each item (useful to report progress).
 
 
-How to see an example
----------------------
+Some usage examples
+-------------------
 
 Get the code, and run::
 
-    bin/certg example_certificate.yaml
+    bin/certg examples/certificate.yaml
 
 The `example_certificate.yaml` is included in the project, with the
 other file it uses: `example_certificate.svg`.
@@ -36,13 +36,13 @@ other file it uses: `example_certificate.svg`.
 After successful execution, you will get three `.pdf` files, the result
 of the generation.
 
+Here's other example that inserts different images in the outputs::
 
-I want another example
-----------------------
+    bin/certg examples/carnet.yaml
 
-Here's one that inserts different images in the outputs::
-
-    bin/certg example_images.yaml
+Finally, if you want to check a code that uses `certg` programatically,
+replacing several fields and *multiple* images in the SVG, see
+`this real life code <https://github.com/PyAr/asoc/tree/master/carnets>`_.
 
 
 What do I need to have installed
