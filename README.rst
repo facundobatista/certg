@@ -16,7 +16,8 @@ Install certg from PyPI and then...
         result_prefix,
         result_distinct,
         replace_info,
-        progress_cb=None)
+        progress_cb=None,
+        pdf_optimized=False)
 
 ... where all mandatory parameters have the same meaning that if you have them
 in the YAML config (see below), and `progress_cb` is a callback to be called
@@ -45,14 +46,15 @@ replacing several fields and *multiple* images in the SVG, see
 `this real life code <https://github.com/PyAr/asoc/tree/master/carnets>`_.
 
 
-What do I need to have installed
---------------------------------
+What do you need to have installed
+----------------------------------
 
-The Python's module `yaml` and `Inkscape` in your system.
+The Python's module `yaml` and `Inkscape` in your system. If you want to
+optimize the resulting PDF, also need Ghostscript installed (`gs`).
 
 
-How to really use it, you mean, for my stuff
---------------------------------------------
+How to really use it, for your specific needs
+---------------------------------------------
 
 You need to create two files: the configuration, and the source SVG.
 Here's a deep explanation of how it all works, but remember you can
@@ -88,3 +90,8 @@ to fill. Those are:
 
 For example, if you put `certs` as the prefix and `name` as the
 distinct value, you'll get as output a file named `certs-foobar.pdf`.
+
+There are some optional variables for different configurations, currently:
+
+    - `pdf_optimized`: it will run Ghoscript (`gs`, which you need to have
+    installed in the system) to optimize the resulting PDF.
