@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2017 Facundo Batista
+# Copyright 2017-2018 Facundo Batista
 
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 3, as published
@@ -22,7 +22,7 @@ from distutils.core import setup
 
 setup(
     name='certg',
-    version='3.3',
+    version='4.1',
     license='GPL-3',
     author='Facundo Batista',
     author_email='facundo@taniquetil.com.ar',

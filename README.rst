@@ -80,18 +80,18 @@ replace; for example::
 Furthermore, in the config you have some mandatory variables you need
 to fill. Those are:
 
-    - `svg_source`: the filename of the SVG you created
+- `svg_source`: the filename of the SVG you created
 
-    - `result_prefix`: the prefix of the PDFs' filenames that will
-      be generated
+- `result_prefix`: the prefix of the PDFs' filenames that will
+  be generated
 
-    - `result_distinct`: the name of the variable in the replacing
-      attributes used as a distinct string for the PDFs.
+- `result_distinct`: the name of the variable in the replacing
+  attributes used as a distinct string for the PDFs.
 
 For example, if you put `certs` as the prefix and `name` as the
 distinct value, you'll get as output a file named `certs-foobar.pdf`.
 
 There are some optional variables for different configurations, currently:
 
-    - `pdf_optimized`: it will run Ghoscript (`gs`, which you need to have
-    installed in the system) to optimize the resulting PDF.
+- `pdf_optimized`: it will run Ghoscript (`gs`, which you need to have
+  installed in the system) to optimize the resulting PDF.
