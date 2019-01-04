@@ -63,6 +63,8 @@ def process(
     svg_source, and naming each PDF according to result_*.
 
     After each PDF progress_cb (if any) will be called to indicate progress.
+
+    If pdf_optimized in True, Ghostscript will be called to improve the final file.
     """
     with open(svg_source, "rt", encoding='utf8') as fh:
         content_base = fh.read()
@@ -78,6 +80,7 @@ def process(
     for data in replace_info:
         replacing_attrs.update(data)
 
+    fileresults = []
     for data in replace_info:
         # indicate advance, if should
         if progress_cb is not None:
@@ -107,12 +110,14 @@ def process(
 
         # generate PDF
         distinct = data[result_distinct].lower().replace(" ", "")
+        final_pdf = "{}-{}.pdf".format(result_prefix, distinct)
+        fileresults.append(final_pdf)
         if pdf_optimized:
             _, pdf_by_inkscape = tempfile.mkstemp(suffix='.pdf')
-            pdf_by_gs = "{}-{}.pdf".format(result_prefix, distinct)
+            pdf_by_gs = final_pdf
         else:
             # inkscape generates directly the final PDF
-            pdf_by_inkscape = "{}-{}.pdf".format(result_prefix, distinct)
+            pdf_by_inkscape = final_pdf
 
         cmd = get_inkscape_cmd(tmpfile, pdf_by_inkscape)
         subprocess.check_call(cmd)
@@ -123,3 +128,5 @@ def process(
             cmd = get_gs_cmd(pdf_by_inkscape, pdf_by_gs)
             subprocess.check_call(cmd)
             os.remove(pdf_by_inkscape)
+
+    return fileresults
