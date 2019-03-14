@@ -52,7 +52,9 @@ pdf_optimized = config.get('optimized', False)
 progress_bar = bar.Bar("Processing", max=len(replace_info))
 progress_callback = lambda data: progress_bar.next()
 
-certg.process(
-    svg_source, result_prefix, result_distinct, replace_info, images, progress_callback, pdf_optimized)
-
-progress_bar.finish()
+try:
+    certg.process(
+        svg_source, result_prefix, result_distinct, replace_info, images, progress_callback, 
+        pdf_optimized)
+finally:
+    progress_bar.finish()
