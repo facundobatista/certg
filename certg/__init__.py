@@ -1,4 +1,4 @@
-# Copyright 2013-2018 Facundo Batista
+# Copyright 2013-2020 Facundo Batista
 
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 3, as published
@@ -18,7 +18,11 @@ import os
 import re
 import subprocess
 import tempfile
-import uuid
+import enum
+
+from PIL import Image
+
+Placement = enum.Enum('Placement', 'stretch center')
 
 
 def get_gs_cmd(srcpath, dstpath):
@@ -35,50 +39,88 @@ def get_inkscape_cmd(srcpath, dstpath):
     return cmd
 
 
-def pre_process_image(content, place_id):
-    """Preprocess a SVG changing a rect for an image, to be filled by replacing a specific var."""
-    replace_var = uuid.uuid4().hex
+def replace_images(content, image_info_raw, replacement_data):
+    """Replace all the rectangles in the SVG for the specified images."""
+    # add the xlink namespace
+    content = content.replace("<svg", '<svg\n   xmlns:xlink="http://www.w3.org/1999/xlink"\n', 1)
+
+    # preprocess the image info
+    image_info = {}
+    for item in image_info_raw:
+        p = item.get('placement')
+        placement = Placement.stretch if p is None else Placement[p]
+        rectangle_id = item.get('rectangle_id', item['placement_rectangle_id'])  # backw' compat
+        image_info[rectangle_id] = (replacement_data[item['path_variable']], placement)
 
     def mutate(match):
-        params = match.groups()[0].split()
-        if not any(place_id in param for param in params):
+        params_all = dict(re.findall(r'(\w+)="?([\w\.\-]+)"?', match.groups()[0]))
+        useful = {'id', 'width', 'height', 'x', 'y'}
+        params = {k: v for k, v in params_all.items() if k in useful}
+
+        if params['id'] not in image_info:
             # not the object we were searching for mutation, return the original sequence
             return match.string[slice(*match.span())]
 
-        params = [p for p in params if p.startswith(("id=", "width=", "height=", "x=", "y="))]
-        params.append('xlink:href="file://{}"'.format(replace_var))
-        params.append('preserveAspectRatio="none"')
-        return "<image {} />".format(" ".join(params))
+        image_path, image_placement = image_info[params['id']]
+        new_params = [
+            'xlink:href="file://{}"'.format(image_path),
+            'preserveAspectRatio="none"',
+        ]
+
+        # Fix params (if needed) according to placement option; by default the previous
+        # coordinates will prevail, which will make placed images to stretch to drawn rectangle
+        if placement == Placement.center:
+            rect_w = float(params['width'])
+            rect_h = float(params['height'])
+            image_w, image_h = Image.open(image_path).size
+
+            # Try to fit it according to it's width; if didn't work fit
+            # it according to it's height
+            new_width = rect_w
+            new_height = image_h * rect_w / image_w
+            if new_height > rect_h:
+                new_height = rect_h
+                new_width = image_w * rect_h / image_h
+
+            # Center the image in the rectangle (note that x/y and
+            # new_x/new_y are upper left corners)
+            new_x = float(params['x']) + (rect_w - new_width) / 2
+            new_y = float(params['y']) + (rect_h - new_height) / 2
+
+            # replace info in params
+            params.update({
+                'width': new_width,
+                'height': new_height,
+                'x': new_x,
+                'y': new_y,
+            })
+
+        new_params.extend('{}="{}"'.format(k, v) for k, v in params.items())
+        return "<image {} />".format(" ".join(new_params))
 
     content = re.sub("<rect(.*?)>", mutate, content, flags=re.DOTALL)
-    return content, replace_var
+    return content
 
 
 def process(
-        svg_source, result_prefix, result_distinct, replace_info, images, progress_cb=None,
+        svg_source, result_prefix, result_distinct, replace_info, images=None, progress_cb=None,
         pdf_optimized=False):
     """Generate N PDFs.
 
     Each PDF is from a key in replace_info, replacing data into the
     svg_source, and naming each PDF according to result_*.
 
-    After each PDF progress_cb (if any) will be called to indicate progress.
+    Before each PDF progress_cb (if any) will be called to indicate progress.
 
     If pdf_optimized in True, Ghostscript will be called to improve the final file.
     """
     with open(svg_source, "rt", encoding='utf8') as fh:
         content_base = fh.read()
 
-    if images is not None:
-        for image in images:
-            place_id = image['placement_rectangle_id']
-            content_base, replacement_variable = pre_process_image(content_base, place_id)
-            image['replacement_variable'] = replacement_variable
-
     # get all the replacing attrs
     replacing_attrs = set()
     for data in replace_info:
-        replacing_attrs.update(data)
+        replacing_attrs.update(data.keys())
 
     fileresults = []
     for data in replace_info:
@@ -97,11 +139,7 @@ def process(
 
         # replace image, if any
         if images is not None:
-            for image in images:
-                image_path_variable = image['path_variable']
-                image_path = os.path.abspath(data[image_path_variable])
-                replacement_variable = image['replacement_variable']
-                content = content.replace(replacement_variable, image_path)
+            content = replace_images(content, images, data)
 
         # write the new svg
         _, tmpfile = tempfile.mkstemp(suffix='.svg')
