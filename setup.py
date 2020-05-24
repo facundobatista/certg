@@ -22,7 +22,7 @@ from distutils.core import setup
 
 setup(
     name='certg',
-    version='4.2',
+    version='5.0',
     license='GPL-3',
     author='Facundo Batista',
     author_email='facundo@taniquetil.com.ar',
@@ -33,5 +33,5 @@ setup(
     packages=["certg"],
     scripts=["bin/certg"],
 
-    install_requires=['progress', 'pyyaml'],
+    install_requires=['progress', 'pyyaml', 'Pillow'],
 )
