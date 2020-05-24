@@ -56,8 +56,10 @@ replacing several fields and *multiple* images in the SVG, see
 What do you need to have installed
 ----------------------------------
 
-The Python's module ``yaml`` and ``Inkscape`` in your system. If you want to
-optimize the resulting PDF, also need Ghostscript installed (``gs``).
+Check ``requirements.txt`` file for needed Python modules.
+
+At system level, you need ``Inkscape`` to be installed. Also, if you want to
+optimize the resulting PDF, you need Ghostscript installed (``gs``).
 
 
 How to really use it, for your specific needs
@@ -128,7 +130,7 @@ Optionally:
   rectangle defined in the SVG. In any case, the image will not exceed the
   boundaries defined by the rectangle. It can be any of the following:
 
-    - ``stretch`` (the default): the image will be accommodated to fill the 
-      whole rectangle, changing its relation aspect if needed.
+  - ``stretch`` (the default): the image will be accommodated to fill the 
+    whole rectangle, changing its relation aspect if needed.
 
-    - ``center``: the image's center will match the rectangle's center
+  - ``center``: the image's center will match the rectangle's center
