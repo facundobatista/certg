@@ -36,7 +36,7 @@ import certg
 
 if len(sys.argv) != 2:
     print("Usage: certg <config.yaml>")
-    exit()
+    exit(1)
 
 with open(sys.argv[1], 'rt', encoding='utf8') as fh:
     config = yaml.load(fh)
