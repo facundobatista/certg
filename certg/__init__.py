@@ -1,4 +1,4 @@
-# Copyright 2013-2020 Facundo Batista
+# Copyright 2013-2022 Facundo Batista
 
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 3, as published
@@ -35,7 +35,7 @@ def get_gs_cmd(srcpath, dstpath):
 
 def get_inkscape_cmd(srcpath, dstpath):
     """Build the command for Inkscape to convert the SVG into PDF."""
-    cmd = ['inkscape', '--export-text-to-path', '--export-pdf={}'.format(dstpath), srcpath]
+    cmd = ['inkscape', '--export-text-to-path', '--export-filename={}'.format(dstpath), srcpath]
     return cmd
 
 

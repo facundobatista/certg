@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2013-2017 Facundo Batista
+# Copyright 2013-2022 Facundo Batista
 
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 3, as published
@@ -39,7 +39,7 @@ if len(sys.argv) != 2:
     exit(1)
 
 with open(sys.argv[1], 'rt', encoding='utf8') as fh:
-    config = yaml.load(fh)
+    config = yaml.safe_load(fh)
 
 
 svg_source = config['svg_source']
